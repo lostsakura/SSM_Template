@@ -13,14 +13,14 @@
   <!-- 所有资源基于官网最新 -->
 
   <!-- 项目名称 -->
-  <name>SM Maven Webapp</name>
+  <name>SSM Maven Webapp</name>
   <!-- 项目网址 -->
   <url>http://www.example.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
 
     <!-- Spring版本 -->
     <spring.version>5.2.2.RELEASE</spring.version>
@@ -33,11 +33,40 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
 
-    <!-- 实现slf4j接口（整合日志组件） -->
+    <!-- ServletAPI -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- JSTL标准标签库 -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+
+    <!-- 日志 java日志 slf4j,log4j,logback,common-logging
+         slf4j: 是规范/接口
+         日志实现:log4j,logback,common-logging
+         使用:slf4j + lockback
+    -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.2.3</version>
+    </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
@@ -45,7 +74,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- JSON -->
+    <!-- JSON解析库 -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
@@ -70,7 +99,7 @@
     <dependency>
       <groupId>com.mchange</groupId>
       <artifactId>c3p0</artifactId>
-      <version>0.9.5.2</version>
+      <version>0.9.5.3</version>
     </dependency>
 
     <!-- MyBatis -->

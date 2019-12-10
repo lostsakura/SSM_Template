@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--  重要的设置项  -->
+    <settings>
+        <!--  例：开启驼峰命名法，默认false DB中使用ab_cd会自动对应Javabean的abCd  -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--  多段联级查询延迟加载  要配合下面的设置一同设置  -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <!-- 开启全局的二级缓存 -->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
+
+</configuration>

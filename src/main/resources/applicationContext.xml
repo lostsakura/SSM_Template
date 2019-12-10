@@ -3,19 +3,27 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/tx
-       http://www.springframework.org/schema/tx/spring-tx.xsd">
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <!-- 扫描使用注解的类型 -->
-    <context:component-scan base-package="com.ls.service"/>
+    <!-- Spring主配置文件（业务逻辑相关） -->
+    <context:component-scan base-package="com.ls" use-default-filters="false">
+<!--        <context:include-filter type="annotation" expression=""/>-->
+    </context:component-scan>
 
-    <!-- 配置数据库相关参数properties的属性 -->
+
+    <!-- 引用外部的数据库设置信息 -->
     <context:property-placeholder location="classpath:jdbc.properties"/>
 
+
+    <!-- 配置数据源 -->
     <!-- 配置C3P0为数据库连接池 -->
     <bean id="dataSourceC3P0" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="${jdbc.driver}"/>
@@ -28,7 +36,6 @@
         <property name="checkoutTimeout" value="${c3p0.checkoutTimeout}"/>
         <property name="acquireRetryAttempts" value="${c3p0.acquireRetryAttempts}"/>
     </bean>
-
     <!-- 配置Druid为数据库连接池 -->
     <bean id="dataSourceDruid" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driver}"/>
@@ -61,30 +68,53 @@
         <property name="logAbandoned" value="${druid.logAbandoned}"/>
     </bean>
 
-    <!-- 配置SqlSessionFactory对象 -->
+
+    <!-- 配置MyBatis -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+
+        <!-- MyBatis的全局配置文件 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
         <!-- 注入数据库连接池 -->
         <property name="dataSource" ref="dataSourceDruid"/>
+        <!-- 配置mapper文件的路径 -->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
         <!-- 扫描model包并使用别名 -->
         <property name="typeAliasesPackage" value="com.ls.model"/>
-        <!-- 配置mapper文件的路径 -->
-        <property name="mapperLocations" value="classpath:mapper/*"/>
     </bean>
+
 
     <!-- 动态扫描DAO包下的接口 -->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <!-- 注入sqlSessionFactory -->
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
         <!-- 给出需要扫描Dao接口包 -->
         <property name="basePackage" value="com.ls.dao"/>
+        <!-- 注入sqlSessionFactory -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
+
 
     <!-- 配置事务管理器 -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 控制数据源 -->
         <property name="dataSource" ref="dataSourceDruid"/>
     </bean>
 
-    <!-- 基于注解的声明式事务 -->
-    <tx:annotation-driven transaction-manager="transactionManager"/>
 
+    <!-- 开启基于注解的声明式事务 -->
+<!--    <tx:annotation-driven transaction-manager="transactionManager"/>-->
+    <!-- 配置文件形式开启事务控制 -->
+    <aop:config>
+        <!-- 管理所有的事务 -->
+        <aop:pointcut id="txPoint" expression="execution(* com.ls.service..*(..))"/>
+        <!-- 配置事务增强 -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint"/>
+    </aop:config>
+    <!-- 事务如何切入 -->
+    <tx:advice id="txAdvice">
+        <tx:attributes>
+            <!-- 所有方法都是事务 -->
+            <tx:method name="*"/>
+            <!-- 以get开始的所有方法 -->
+            <tx:method name="get*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
 </beans>
